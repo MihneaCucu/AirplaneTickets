@@ -3,7 +3,6 @@ import Services.AircraftService;
 import Services.AirportService;
 import Services.FlightService;
 import Utils.AircraftType;
-import Utils.SeatPosition;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -36,24 +35,23 @@ public class Main {
 
         while (true) {
             System.out.println("\nChoose an option:");
-            System.out.println("2. View all flights");
-            System.out.println("3. View flights from a specific location");
-            System.out.println("4. Add a passenger to a flight");
-            System.out.println("5. Add a new flight");
-            System.out.println("6. View passengers for a flight");
-            System.out.println("7. View all aircraft");
-            System.out.println("8. View all airports");
-            System.out.println("9. Add a new airport");
-            System.out.println("10. Add a new aircraft");
-            System.out.println("11. Exit");
+            System.out.println("1. View all flights");
+            System.out.println("2. View flights from a specific location");
+            System.out.println("3. Add a passenger to a flight");
+            System.out.println("4. Add a new flight");
+            System.out.println("5. View passengers for a flight");
+            System.out.println("6. View all aircraft");
+            System.out.println("7. View all airports");
+            System.out.println("8. Add a new airport");
+            System.out.println("9. Add a new aircraft");
+            System.out.println("10. Exit");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
 
             switch (choice) {
 
-
-                case 2:
+                case 1:
                     List<Flight> flights = flightService.getAllFlights();
                     for (Flight flight : flights) {
                         System.out.println("Flight " + flight.getFlightNumber() + " from " +
@@ -62,7 +60,7 @@ public class Main {
                     }
                     break;
 
-                case 3:
+                case 2:
                     try {
                         System.out.println("Enter departure city (or type 'x' to go back):");
                         String city = getInputOrBack(scanner);
@@ -77,7 +75,7 @@ public class Main {
                     }
                     break;
 
-                case 4:
+                case 3:
                     try {
                         System.out.println("Enter flight number (or type 'x' to go back):");
                         String flightNumberInput = getInputOrBack(scanner);
@@ -117,7 +115,7 @@ public class Main {
                     }
                     break;
 
-                case 5:
+                case 4:
                     try {
                         System.out.println("Enter departure Airport ID (or type 'x' to go back):");
                         int departureAirportId = Integer.parseInt(getInputOrBack(scanner));
@@ -159,7 +157,7 @@ public class Main {
                     }
                     break;
 
-                case 6:
+                case 5:
                     try {
                         System.out.println("Enter flight number (or type 'x' to go back):");
                         String flightNumberInput = getInputOrBack(scanner);
@@ -179,7 +177,7 @@ public class Main {
                     }
                     break;
 
-                case 7:
+                case 6:
                     System.out.println("Available aircraft:");
                     List<Aircraft> aircraftList = aircraftService.getAllAircraft();
                     for (Aircraft aircraft : aircraftList) {
@@ -188,7 +186,7 @@ public class Main {
                     }
                     break;
 
-                case 8:
+                case 7:
                     System.out.println("Available airports:");
                     Set<Airport> airports = airportService.getAllAirports();
                     for (Airport airport : airports) {
@@ -196,7 +194,7 @@ public class Main {
                     }
                     break;
 
-                case 9:
+                case 8:
                     try {
                         System.out.println("Enter the name of the airport (or type 'x' to go back):");
                         String airportName = getInputOrBack(scanner);
@@ -214,7 +212,7 @@ public class Main {
                     }
                     break;
 
-                case 10:
+                case 9:
                     try {
                         System.out.println("Enter aircraft type (Boeing/Airbus) (or type 'x' to go back):");
                         String aircraftTypeInput = getInputOrBack(scanner);
@@ -233,7 +231,7 @@ public class Main {
                     }
                     break;
 
-                case 11:
+                case 10:
                     System.out.println("Exiting...");
                     scanner.close();
                     return;
@@ -245,3 +243,4 @@ public class Main {
         }
     }
 }
+
