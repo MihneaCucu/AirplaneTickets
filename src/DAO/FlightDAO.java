@@ -112,19 +112,21 @@ public class FlightDAO {
     }
 
     public int deleteFlight(int flightNumber) {
-        String sql = "DELETE FROM Flights WHERE FlightNumber = ?";
         int returnValue = 0;
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, flightNumber);
-            returnValue = stmt.executeUpdate();
-
+        String deleteSeatsSql = "DELETE FROM Seats WHERE FlightID = ?";
+        String deleteFlightSql = "DELETE FROM Flights WHERE FlightNumber = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            try (PreparedStatement stmtSeats = conn.prepareStatement(deleteSeatsSql)) {
+                stmtSeats.setInt(1, flightNumber);
+                stmtSeats.executeUpdate();
+            }
+            try (PreparedStatement stmtFlight = conn.prepareStatement(deleteFlightSql)) {
+                stmtFlight.setInt(1, flightNumber);
+                returnValue = stmtFlight.executeUpdate();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return returnValue;
     }
 
@@ -154,6 +156,32 @@ public class FlightDAO {
             e.printStackTrace();
         }
 
+        return flights;
+    }
+
+    public List<Flight> getFlightsByPassengerName(String passengerName) {
+        List<Flight> flights = new ArrayList<>();
+        String sql = "SELECT DISTINCT f.* FROM Flights f " +
+                "JOIN Seats s ON f.FlightNumber = s.FlightID " +
+                "WHERE s.PassengerName = ?";
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, passengerName);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Flight flight = new Flight(
+                        rs.getInt("FlightNumber"),
+                        rs.getInt("DepartureAirport"),
+                        rs.getInt("ArrivalAirport"),
+                        fromTimestamp(rs.getTimestamp("DepartureDateTime")),
+                        fromTimestamp(rs.getTimestamp("ArrivalDateTime")),
+                        rs.getInt("Aircraft")
+                );
+                flights.add(flight);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return flights;
     }
 }

@@ -199,4 +199,43 @@ public class FlightService {
         }
         return filteredFlights;
     }
+
+    public List<Flight> getFlightsByPassengerName(String passengerName) {
+        return flightDAO.getFlightsByPassengerName(passengerName);
+    }
+
+    public List<String> getFlightDetailsByPassengerName(String passengerName) {
+        List<String> details = new ArrayList<>();
+        List<Flight> flights = getFlightsByPassengerName(passengerName);
+        if (flights.isEmpty()) {
+            details.add("Passenger not found on any flight.");
+            return details;
+        }
+        List<Airport> airports = airportDAO.getAllAirports();
+        for (Flight flight : flights) {
+            Airport dep = airports.stream()
+                .filter(a -> a.getId() == flight.getDepartureAirportId())
+                .findFirst().orElse(null);
+            Airport arr = airports.stream()
+                .filter(a -> a.getId() == flight.getArrivalAirportId())
+                .findFirst().orElse(null);
+            String depName = dep != null ? dep.getName() + ", " + dep.getCity() : "Unknown";
+            String arrName = arr != null ? arr.getName() + ", " + arr.getCity() : "Unknown";
+            details.add("Flight number: " + flight.getFlightNumber() +
+                ", From: " + depName +
+                ", To: " + arrName +
+                ", Departure: " + flight.getDepartureDateTime() +
+                ", Arrival: " + flight.getArrivalDateTime());
+        }
+        return details;
+    }
+
+    public List<Integer> getFlightNumbersByPassengerName(String passengerName) {
+        List<Integer> flightNumbers = new ArrayList<>();
+        List<Flight> flights = getFlightsByPassengerName(passengerName);
+        for (Flight flight : flights) {
+            flightNumbers.add(flight.getFlightNumber());
+        }
+        return flightNumbers;
+    }
 }

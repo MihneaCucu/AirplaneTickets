@@ -44,7 +44,16 @@ public class Main {
             System.out.println("7. View all airports");
             System.out.println("8. Add a new airport");
             System.out.println("9. Add a new aircraft");
-            System.out.println("10. Exit");
+            System.out.println("10. Remove a flight");
+            System.out.println("11. Exit");
+            System.out.println("12. View all available cities");
+            System.out.println("13. Update an aircraft");
+            System.out.println("14. Delete an aircraft");
+            System.out.println("15. Update an airport's name");
+            System.out.println("16. Remove an airport");
+            System.out.println("17. Update a flight's details");
+            System.out.println("18. Remove a passenger from a flight");
+            System.out.println("19. View all flights for a passenger");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -53,9 +62,15 @@ public class Main {
 
                 case 1:
                     List<Flight> flights = flightService.getAllFlights();
+                    java.util.Map<Integer, String> airportIdToName = new java.util.HashMap<>();
+                    for (Airport airport : airportService.getAllAirports()) {
+                        airportIdToName.put(airport.getId(), airport.getName());
+                    }
                     for (Flight flight : flights) {
+                        String departureName = airportIdToName.getOrDefault(flight.getDepartureAirportId(), "Unknown");
+                        String arrivalName = airportIdToName.getOrDefault(flight.getArrivalAirportId(), "Unknown");
                         System.out.println("Flight " + flight.getFlightNumber() + " from " +
-                                flight.getDepartureAirportId() + " to " + flight.getArrivalAirportId() +
+                                departureName + " to " + arrivalName +
                                 " using aircraft ID " + flight.getAircraftId());
                     }
                     break;
@@ -65,10 +80,20 @@ public class Main {
                         System.out.println("Enter departure city (or type 'x' to go back):");
                         String city = getInputOrBack(scanner);
                         List<Flight> cityFlights = flightService.getFlightsByDepartureCity(city);
-                        for (Flight flight : cityFlights) {
-                            System.out.println("Flight " + flight.getFlightNumber() + " from " +
-                                    flight.getDepartureAirportId() + " to " + flight.getArrivalAirportId() +
-                                    " using aircraft ID " + flight.getAircraftId());
+                        java.util.Map<Integer, String> airportIdToName2 = new java.util.HashMap<>();
+                        for (Airport airport : airportService.getAllAirports()) {
+                            airportIdToName2.put(airport.getId(), airport.getName());
+                        }
+                        if (cityFlights.isEmpty()) {
+                            System.out.println("No flights found for the specified city.");
+                        } else {
+                            for (Flight flight : cityFlights) {
+                                String departureName = airportIdToName2.getOrDefault(flight.getDepartureAirportId(), "Unknown");
+                                String arrivalName = airportIdToName2.getOrDefault(flight.getArrivalAirportId(), "Unknown");
+                                System.out.println("Flight " + flight.getFlightNumber() + " from " +
+                                        departureName + " to " + arrivalName +
+                                        " using aircraft ID " + flight.getAircraftId());
+                            }
                         }
                     } catch (RuntimeException e) {
                         if (!e.getMessage().equals("back")) throw e;
@@ -189,7 +214,9 @@ public class Main {
                 case 7:
                     System.out.println("Available airports:");
                     Set<Airport> airports = airportService.getAllAirports();
-                    for (Airport airport : airports) {
+                    List<Airport> sortedAirports = new java.util.ArrayList<>(airports);
+                    sortedAirports.sort(java.util.Comparator.comparing(Airport::getName));
+                    for (Airport airport : sortedAirports) {
                         System.out.println(airport.getName());
                     }
                     break;
@@ -232,9 +259,226 @@ public class Main {
                     break;
 
                 case 10:
+                    try {
+                        System.out.println("Enter flight number to remove (or type 'x' to go back):");
+                        String flightNumberInput = getInputOrBack(scanner);
+                        int flightNumber = Integer.parseInt(flightNumberInput);
+                        flightService.removeFlight(flightNumber);
+                    } catch (RuntimeException e) {
+                        if (!e.getMessage().equals("back")) throw e;
+                    }
+                    break;
+
+                case 11:
                     System.out.println("Exiting...");
                     scanner.close();
                     return;
+
+                case 12:
+                    System.out.println("Available cities:");
+                    Set<Airport> allAirports = airportService.getAllAirports();
+                    java.util.Set<String> cities = new java.util.TreeSet<>();
+                    for (Airport airport : allAirports) {
+                        cities.add(airport.getCity());
+                    }
+                    for (String cityName : cities) {
+                        System.out.println(cityName);
+                    }
+                    break;
+
+                case 13:
+                    try {
+                        System.out.println("Enter aircraft ID to update (or type 'x' to go back):");
+                        String idInput = getInputOrBack(scanner);
+                        int aircraftId = Integer.parseInt(idInput);
+
+                        Aircraft aircraft = null;
+                        for (Aircraft a : aircraftService.getAllAircraft()) {
+                            if (a.getId() == aircraftId) {
+                                aircraft = a;
+                                break;
+                            }
+                        }
+                        if (aircraft == null) {
+                            System.out.println("Error: Aircraft not found.");
+                            break;
+                        }
+
+                        System.out.println("Enter new total seats (or type 'x' to go back):");
+                        String seatsInput = getInputOrBack(scanner);
+                        int newSeats = Integer.parseInt(seatsInput);
+
+                        Aircraft updatedAircraft = new Aircraft(aircraftId, aircraft.getAircraftType(), newSeats);
+                        aircraftService.updateAircraft(updatedAircraft);
+                        System.out.println("Aircraft updated successfully.");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Error: Invalid input.");
+                    } catch (RuntimeException e) {
+                        if (!e.getMessage().equals("back")) throw e;
+                    }
+                    break;
+
+                case 14:
+                    try {
+                        System.out.println("Enter aircraft ID to delete (or type 'x' to go back):");
+                        String idInput = getInputOrBack(scanner);
+                        int aircraftId = Integer.parseInt(idInput);
+                        boolean hasFlights = false;
+                        for (Flight f : flightService.getAllFlights()) {
+                            if (f.getAircraftId() == aircraftId) {
+                                hasFlights = true;
+                                break;
+                            }
+                        }
+                        if (hasFlights) {
+                            System.out.println("Error: Aircraft cannot be deleted because it is assigned to one or more flights.");
+                        } else {
+                            aircraftService.deleteAircraft(aircraftId);
+                            System.out.println("Aircraft deleted successfully.");
+                        }
+                    } catch (RuntimeException e) {
+                        if (!e.getMessage().equals("back")) throw e;
+                    }
+                    break;
+
+                case 15:
+                    try {
+                        System.out.println("Enter airport ID to update (or type 'x' to go back):");
+                        String idInput = getInputOrBack(scanner);
+                        int airportId = Integer.parseInt(idInput);
+
+                        System.out.println("Enter new airport name (or type 'x' to go back):");
+                        String newName = getInputOrBack(scanner);
+
+                        airportService.updateAirport(airportId, newName);
+                    } catch (RuntimeException e) {
+                        if (!e.getMessage().equals("back")) throw e;
+                    }
+                    break;
+
+                case 16:
+                    try {
+                        System.out.println("Enter airport ID to delete (or type 'x' to go back):");
+                        String idInput = getInputOrBack(scanner);
+                        int airportId = Integer.parseInt(idInput);
+                        Airport airportToRemove = null;
+                        for (Airport airport : airportService.getAllAirports()) {
+                            if (airport.getId() == airportId) {
+                                airportToRemove = airport;
+                                break;
+                            }
+                        }
+                        if (airportToRemove == null) {
+                            System.out.println("Error: Airport not found.");
+                        } else {
+                            boolean hasFlights = false;
+                            for (Flight f : flightService.getAllFlights()) {
+                                if (f.getDepartureAirportId() == airportId || f.getArrivalAirportId() == airportId) {
+                                    hasFlights = true;
+                                    break;
+                                }
+                            }
+                            if (hasFlights) {
+                                System.out.println("Error: Airport cannot be deleted because it is used in one or more flights.");
+                            } else {
+                                airportService.removeAirport(airportToRemove);
+                            }
+                        }
+                    } catch (RuntimeException e) {
+                        if (!e.getMessage().equals("back")) throw e;
+                    }
+                    break;
+
+                case 17:
+                    try {
+                        System.out.println("Enter flight number to update (or type 'x' to go back):");
+                        String flightNumberInput = getInputOrBack(scanner);
+                        int flightNumber = Integer.parseInt(flightNumberInput);
+                        Flight flight = flightService.findFlightByNumber(flightNumber);
+                        if (flight == null) {
+                            System.out.println("Error: Flight not found.");
+                            break;
+                        }
+                        System.out.println("Enter new departure Airport ID (or type 'x' to go back):");
+                        int newDepartureAirportId = Integer.parseInt(getInputOrBack(scanner));
+                        System.out.println("Enter new arrival Airport ID (or type 'x' to go back):");
+                        int newArrivalAirportId = Integer.parseInt(getInputOrBack(scanner));
+                        System.out.println("Enter new departure date (yyyy-mm-dd) (or type 'x' to go back):");
+                        String newDepartureDateStr = getInputOrBack(scanner);
+                        System.out.println("Enter new departure time (hh:mm) (or type 'x' to go back):");
+                        String newDepartureTimeStr = getInputOrBack(scanner);
+                        LocalDateTime newDepartureDateTime = LocalDateTime.parse(
+                            newDepartureDateStr + newDepartureTimeStr,
+                            DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm")
+                        );
+                        System.out.println("Enter new arrival date (yyyy-mm-dd) (or type 'x' to go back):");
+                        String newArrivalDateStr = getInputOrBack(scanner);
+                        System.out.println("Enter new arrival time (hh:mm) (or type 'x' to go back):");
+                        String newArrivalTimeStr = getInputOrBack(scanner);
+                        LocalDateTime newArrivalDateTime = LocalDateTime.parse(
+                            newArrivalDateStr + newArrivalTimeStr,
+                            DateTimeFormatter.ofPattern("yyyy-MM-ddHH:mm")
+                        );
+                        System.out.println("Enter new aircraft ID (or type 'x' to go back):");
+                        int newAircraftId = Integer.parseInt(getInputOrBack(scanner));
+                        Flight updatedFlight = new Flight(
+                            newDepartureAirportId,
+                            newArrivalAirportId,
+                            newDepartureDateTime,
+                            newArrivalDateTime,
+                            newAircraftId
+                        );
+                        java.lang.reflect.Field field = Flight.class.getDeclaredField("flightNumber");
+                        field.setAccessible(true);
+                        field.set(updatedFlight, flightNumber);
+                        flightService.updateFlight(updatedFlight);
+                        System.out.println("Flight updated successfully.");
+                    } catch (RuntimeException | NoSuchFieldException | IllegalAccessException e) {
+                        if (e instanceof RuntimeException && !e.getMessage().equals("back")) throw (RuntimeException)e;
+                        if (!(e instanceof RuntimeException)) {
+                            System.out.println("Error: Could not update flight.");
+                        }
+                    }
+                    break;
+
+                case 18:
+                    try {
+                        System.out.println("Enter passenger name and surname (or type 'x' to go back):");
+                        String passengerName = getInputOrBack(scanner);
+                        List<Integer> flightsWithPassenger = flightService.getFlightNumbersByPassengerName(passengerName);
+                        if (flightsWithPassenger.isEmpty()) {
+                            System.out.println("Passenger not found on any flight.");
+                            break;
+                        }
+                        System.out.println("Passenger '" + passengerName + "' is on the following flights:");
+                        for (Integer fn : flightsWithPassenger) {
+                            System.out.println("Flight number: " + fn);
+                        }
+                        System.out.println("Enter flight number to remove passenger from (or type 'x' to go back):");
+                        String flightNumberInput = getInputOrBack(scanner);
+                        int flightNumber = Integer.parseInt(flightNumberInput);
+                        if (!flightsWithPassenger.contains(flightNumber)) {
+                            System.out.println("Error: Passenger is not on this flight.");
+                            break;
+                        }
+                        flightService.cancelSeat(flightNumber, passengerName);
+                    } catch (RuntimeException e) {
+                        if (!e.getMessage().equals("back")) throw e;
+                    }
+                    break;
+
+                case 19:
+                    try {
+                        System.out.println("Enter passenger name and surname (or type 'x' to go back):");
+                        String passengerName = getInputOrBack(scanner);
+                        List<String> details = flightService.getFlightDetailsByPassengerName(passengerName);
+                        for (String detail : details) {
+                            System.out.println(detail);
+                        }
+                    } catch (RuntimeException e) {
+                        if (!e.getMessage().equals("back")) throw e;
+                    }
+                    break;
 
                 default:
                     System.out.println("Invalid choice. Please try again.");
