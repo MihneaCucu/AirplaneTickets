@@ -6,6 +6,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class FlightDAO {
     private static final String URL = "jdbc:mysql://localhost:3306/testdb";
@@ -13,8 +14,10 @@ public class FlightDAO {
     private static final String PASSWORD = "";
 
     private static FlightDAO instance;
+    private final GenericDAO<Flight> genericDAO;
 
     private FlightDAO() {
+        genericDAO = GenericDAO.getInstance();
     }
 
     public static FlightDAO getInstance() {
@@ -27,6 +30,7 @@ public class FlightDAO {
         }
         return instance;
     }
+
     private Timestamp toTimestamp(LocalDateTime ldt) {
         return ldt == null ? null : Timestamp.valueOf(ldt);
     }
@@ -161,21 +165,17 @@ public class FlightDAO {
 
     public List<Flight> getFlightsByPassengerName(String passengerName) {
         List<Flight> flights = new ArrayList<>();
-        String sql = "SELECT DISTINCT f.* FROM Flights f " +
-                "JOIN Seats s ON f.FlightNumber = s.FlightID " +
-                "WHERE s.PassengerName = ?";
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, passengerName);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
+        String sql = "SELECT DISTINCT f.* FROM Flights f JOIN Seats s ON f.FlightNumber = s.FlightID WHERE s.PassengerName = ?";
+        try {
+            List<Map<String, Object>> results = genericDAO.executeQuery(sql, passengerName);
+            for (Map<String, Object> row : results) {
                 Flight flight = new Flight(
-                        rs.getInt("FlightNumber"),
-                        rs.getInt("DepartureAirport"),
-                        rs.getInt("ArrivalAirport"),
-                        fromTimestamp(rs.getTimestamp("DepartureDateTime")),
-                        fromTimestamp(rs.getTimestamp("ArrivalDateTime")),
-                        rs.getInt("Aircraft")
+                        ((Number) row.get("FlightNumber")).intValue(),
+                        ((Number) row.get("DepartureAirport")).intValue(),
+                        ((Number) row.get("ArrivalAirport")).intValue(),
+                        fromTimestamp((java.sql.Timestamp) row.get("DepartureDateTime")),
+                        fromTimestamp((java.sql.Timestamp) row.get("ArrivalDateTime")),
+                        ((Number) row.get("Aircraft")).intValue()
                 );
                 flights.add(flight);
             }

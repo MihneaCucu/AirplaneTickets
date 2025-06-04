@@ -12,8 +12,10 @@ public class SeatDAO {
     private static final String PASSWORD = "";
 
     private static SeatDAO instance;
+    private final GenericDAO<Seat> genericDAO;
 
     private SeatDAO() {
+        genericDAO = GenericDAO.getInstance();
     }
 
     public static SeatDAO getInstance() {
@@ -26,6 +28,7 @@ public class SeatDAO {
         }
         return instance;
     }
+
     public void insertSeat(Seat seat) {
         String sql = "INSERT INTO Seats (`Row`, Position, ExtraLegRoom, PassengerName, FlightID) VALUES (?, ?, ?, ?, ?)";
 
@@ -75,50 +78,29 @@ public class SeatDAO {
     public int updateSeat(Seat seat) {
         String sql = "UPDATE Seats SET PassengerName = ? WHERE FlightID = ? AND `Row` = ? AND `Position` = ? AND PassengerName IS NULL";
         int returnValue = 0;
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, seat.getPassengerName());
-            stmt.setInt(2, seat.getFlightId());
-            stmt.setInt(3, seat.getRow());
-            stmt.setString(4, String.valueOf(seat.getPosition()));
-
-            returnValue = stmt.executeUpdate();
-
+        try {
+            returnValue = genericDAO.executeUpdate(sql, seat.getPassengerName(), seat.getFlightId(), seat.getRow(), String.valueOf(seat.getPosition()));
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return returnValue;
     }
 
     public int deleteSeat(int flightID, String passengerName) {
         String sql = "UPDATE Seats SET PassengerName = NULL WHERE FlightID = ? AND PassengerName = ?";
         int returnValue = 0;
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, flightID);
-            stmt.setString(2, passengerName);
-
-            returnValue = stmt.executeUpdate();
-
+        try {
+            returnValue = genericDAO.executeUpdate(sql, flightID, passengerName);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return returnValue;
-
     }
 
     public void deleteSeatsByFlightId(int flightId) {
         String sql = "DELETE FROM Seats WHERE FlightID = ?";
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, flightId);
-            stmt.executeUpdate();
-
+        try {
+            genericDAO.executeUpdate(sql, flightId);
         } catch (SQLException e) {
             e.printStackTrace();
         }

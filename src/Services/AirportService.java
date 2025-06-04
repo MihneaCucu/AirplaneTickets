@@ -59,4 +59,13 @@ public class AirportService {
         List<Airport> list = airportDAO.getAllAirports();
         return new HashSet<>(list);
     }
+
+    public Airport getAirportById(int id) {
+        for (Airport airport : getAllAirports()) {
+            if (airport.getId() == id) {
+                return airport;
+            }
+        }
+        return null;
+    }
 }

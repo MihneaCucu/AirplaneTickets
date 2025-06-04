@@ -12,8 +12,10 @@ public class AirportDAO {
     private static final String PASSWORD = "";
 
     private static AirportDAO instance;
+    private final GenericDAO<Airport> genericDAO;
 
     private AirportDAO() {
+        genericDAO = GenericDAO.getInstance();
     }
 
     public static AirportDAO getInstance() {
@@ -98,35 +100,22 @@ public class AirportDAO {
     public int updateAirport(int id, String name) {
         String sql = "UPDATE Airports SET Name = ? WHERE ID = ?";
         int returnValue = 0;
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, name);
-            stmt.setInt(2, id);
-            returnValue = stmt.executeUpdate();
-
+        try {
+            returnValue = genericDAO.executeUpdate(sql, name, id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return returnValue;
     }
 
     public int deleteAirport(int id) {
         String sql = "DELETE FROM Airports WHERE ID = ?";
         int returnValue = 0;
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            returnValue = stmt.executeUpdate();
-
+        try {
+            returnValue = genericDAO.executeUpdate(sql, id);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return returnValue;
     }
 }

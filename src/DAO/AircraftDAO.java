@@ -13,8 +13,10 @@ public class AircraftDAO {
     private static final String PASSWORD = "";
 
     private static AircraftDAO instance;
+    private final GenericDAO<Aircraft> genericDAO;
 
     private AircraftDAO() {
+        genericDAO = GenericDAO.getInstance();
     }
 
     public static AircraftDAO getInstance() {
@@ -69,14 +71,8 @@ public class AircraftDAO {
 
     public void updateAircraft(Aircraft aircraft) {
         String sql = "UPDATE Aircraft SET TotalSeats = ? WHERE ID = ?";
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, aircraft.getTotalSeats());
-            stmt.setInt(2, aircraft.getId());
-            stmt.executeUpdate();
-
+        try {
+            genericDAO.executeUpdate(sql, aircraft.getTotalSeats(), aircraft.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -84,13 +80,8 @@ public class AircraftDAO {
 
     public void deleteAircraft(int id) {
         String sql = "DELETE FROM Aircraft WHERE ID = ?";
-
-        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-
+        try {
+            genericDAO.executeUpdate(sql, id);
         } catch (SQLException e) {
             e.printStackTrace();
         }

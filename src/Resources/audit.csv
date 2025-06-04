@@ -14,3 +14,13 @@ Aircraft updated: Domain.Aircraft@139982de,2025-06-03 17:53:47
 Seat reserved: Seat{id=0, row=2, position=A, extraLegRoom=false, passengerName='Mihnea Cucu', flightId=8},2025-06-03 18:17:19
 Seat cancelled for passenger: Mihnea Cucu,2025-06-03 19:11:51
 Seat reserved: Seat{id=0, row=5, position=A, extraLegRoom=false, passengerName='Mihnea Cucu', flightId=8},2025-06-03 19:12:55
+Flight added to database: Flight{flightNumber=0, departureAirportId=4, arrivalAirportId=5, departureDateTime=2025-06-23T10:00, arrivalDateTime=2025-06-23T14:00, aircraftId=7},2025-06-04 19:05:58
+Flight added to database: Flight{flightNumber=0, departureAirportId=1, arrivalAirportId=4, departureDateTime=2025-07-01T09:00, arrivalDateTime=2025-07-01T14:00, aircraftId=6},2025-06-04 19:07:33
+Flight added to database: Flight{flightNumber=0, departureAirportId=1, arrivalAirportId=7, departureDateTime=2025-07-10T08:00, arrivalDateTime=2025-07-10T10:00, aircraftId=4},2025-06-04 19:08:16
+Added airport: IST,2025-06-04 19:09:24
+Flight added to database: Flight{flightNumber=0, departureAirportId=1, arrivalAirportId=11, departureDateTime=2025-06-25T09:00, arrivalDateTime=2025-06-25T10:00, aircraftId=2},2025-06-04 19:10:13
+Flight added to database: Flight{flightNumber=0, departureAirportId=11, arrivalAirportId=10, departureDateTime=2025-07-10T10:00, arrivalDateTime=2025-07-10T20:00, aircraftId=8},2025-06-04 19:10:52
+Seat reserved: Seat{id=0, row=4, position=A, extraLegRoom=false, passengerName='Mihnea Cucu', flightId=11},2025-06-04 19:31:14
+Seat reserved: Seat{id=0, row=4, position=A, extraLegRoom=false, passengerName='Mihnea Cucu', flightId=12},2025-06-04 19:36:08
+Seat reserved: Seat{id=0, row=4, position=B, extraLegRoom=false, passengerName='Anastasia Soptica', flightId=12},2025-06-04 19:36:19
+Seat reserved: Seat{id=0, row=1, position=A, extraLegRoom=false, passengerName='Mihnea Cucu', flightId=9},2025-06-04 20:13:38
