@@ -305,11 +305,23 @@ public class Main {
 
                 case 9:
                     try {
-                        System.out.println("Enter departure Airport ID (or type 'x' to go back):");
-                        int departureAirportId = Integer.parseInt(getInputOrBack(scanner));
+                        System.out.println("Enter the name of the departure airport (e.g. OTP, CDG) (or type 'x' to go back):");
+                        String departureIata = getInputOrBack(scanner);
+                        Airport departureAirport = airportService.getAirportByName(departureIata);
+                        if (departureAirport == null) {
+                            System.out.println("Invalid departure airport code.");
+                            break;
+                        }
+                        int departureAirportId = departureAirport.getId();
 
-                        System.out.println("Enter arrival AirportId (or type 'x' to go back):");
-                        int arrivalAirportId = Integer.parseInt(getInputOrBack(scanner));
+                        System.out.println("Enter the name of the destination airport (e.g. OTP, CDG) (or type 'x' to go back):");
+                        String arrivalIata = getInputOrBack(scanner);
+                        Airport arrivalAirport = airportService.getAirportByName(arrivalIata);
+                        if (arrivalAirport == null) {
+                            System.out.println("Invalid arrival airport code.");
+                            break;
+                        }
+                        int arrivalAirportId = arrivalAirport.getId();
 
                         System.out.println("Enter departure date (yyyy-mm-dd) (or type 'x' to go back):");
                         String departureDateStr = getInputOrBack(scanner);

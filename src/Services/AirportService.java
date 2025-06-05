@@ -68,4 +68,13 @@ public class AirportService {
         }
         return null;
     }
+
+    public Airport getAirportByName(String name) {
+        for (Airport airport : getAllAirports()) {
+            if (airport.getName().equalsIgnoreCase(name)) {
+                return airport;
+            }
+        }
+        return null;
+    }
 }

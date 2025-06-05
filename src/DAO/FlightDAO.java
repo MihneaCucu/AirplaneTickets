@@ -59,6 +59,9 @@ public class FlightDAO {
                 generatedId = rs.getInt(1);
             }
 
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Error: aircraft ID does not exist or is invalid.");
+
         } catch (SQLException e) {
             e.printStackTrace();
 
