@@ -6,12 +6,10 @@ import Utils.AircraftType;
 public class Aircraft {
     private int id;
     private AircraftType aircraftType;
-    private int totalSeats;
 
-    public Aircraft(int id, AircraftType aircraftType, int totalSeats) {
+    public Aircraft(int id, AircraftType aircraftType) {
         this.id = id;
         this.aircraftType = aircraftType;
-        this.totalSeats = totalSeats;
     }
 
     public int getId() {
@@ -20,10 +18,6 @@ public class Aircraft {
 
     public AircraftType getAircraftType() {
         return aircraftType;
-    }
-
-    public int getTotalSeats() {
-        return totalSeats;
     }
 
 

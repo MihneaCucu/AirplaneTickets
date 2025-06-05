@@ -24,3 +24,19 @@ Seat reserved: Seat{id=0, row=4, position=A, extraLegRoom=false, passengerName='
 Seat reserved: Seat{id=0, row=4, position=A, extraLegRoom=false, passengerName='Mihnea Cucu', flightId=12},2025-06-04 19:36:08
 Seat reserved: Seat{id=0, row=4, position=B, extraLegRoom=false, passengerName='Anastasia Soptica', flightId=12},2025-06-04 19:36:19
 Seat reserved: Seat{id=0, row=1, position=A, extraLegRoom=false, passengerName='Mihnea Cucu', flightId=9},2025-06-04 20:13:38
+Seat reserved: Seat{id=0, row=2, position=A, extraLegRoom=false, passengerName='Anastasia Soptica', flightId=11},2025-06-04 20:37:57
+Seat reserved: Seat{id=0, row=1, position=A, extraLegRoom=false, passengerName='Anastasia Cucu', flightId=11},2025-06-04 20:38:15
+Passenger aircraft added: Domain.PassengerAircraft@477b4cdf,2025-06-05 17:09:13
+Seat reserved: Seat{id=0, row=1, position=A, extraLegRoom=false, passengerName='Mihnea Cucu', flightId=8},2025-06-05 17:10:20
+Flight added to database: Flight{flightNumber=0, departureAirportId=1, arrivalAirportId=4, departureDateTime=2025-06-23T10:00, arrivalDateTime=2025-06-23T16:00, aircraftId=11},2025-06-05 17:17:49
+Passenger aircraft added: Domain.PassengerAircraft@346d61be,2025-06-05 17:18:00
+Passenger aircraft added: Domain.PassengerAircraft@2cd2a21f,2025-06-05 17:18:15
+Passenger aircraft added: Domain.PassengerAircraft@3738449f,2025-06-05 17:18:25
+Passenger aircraft added: Domain.PassengerAircraft@53976f5c,2025-06-05 17:18:41
+Passenger aircraft added: Domain.PassengerAircraft@be35cd9,2025-06-05 17:18:45
+Passenger aircraft added: Domain.PassengerAircraft@732c2a62,2025-06-05 17:18:53
+Flight added to database: Flight{flightNumber=0, departureAirportId=3, arrivalAirportId=8, departureDateTime=2025-06-25T10:00, arrivalDateTime=2025-06-25T16:00, aircraftId=16},2025-06-05 17:20:03
+Flight added to database: Flight{flightNumber=0, departureAirportId=5, arrivalAirportId=9, departureDateTime=2025-07-01T08:00, arrivalDateTime=2025-07-01T10:00, aircraftId=15},2025-06-05 17:22:07
+Seat reserved: Seat{id=0, row=2, position=A, extraLegRoom=false, passengerName='Anastasia Soptica', flightId=15},2025-06-05 17:22:56
+Cargo aircraft added: Domain.CargoAircraft@5b7a5baa,2025-06-05 17:33:46
+Cargo aircraft added: Domain.CargoAircraft@6150c3ec,2025-06-05 17:35:31

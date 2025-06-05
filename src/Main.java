@@ -1,5 +1,5 @@
 import Domain.*;
-import Services.AircraftService;
+import Services.PassengerAircraftService;
 import Services.AirportService;
 import Services.FlightService;
 import Utils.AircraftType;
@@ -22,7 +22,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        AircraftService aircraftService = AircraftService.getInstance();
+        PassengerAircraftService passengerAircraftService = PassengerAircraftService.getInstance();
         AirportService airportService = AirportService.getInstance();
         FlightService flightService = FlightService.getInstance();
 
@@ -41,18 +41,21 @@ public class Main {
             System.out.println("4. View flights from a specific location");
             System.out.println("5. View passengers for a flight");
             System.out.println("6. View all flights for a passenger");
-            System.out.println("7. View all aircraft");
-            System.out.println("8. Add a new flight");
-            System.out.println("9. Add a new airport");
-            System.out.println("10. Add a new aircraft");
-            System.out.println("11. Update a flight's details");
-            System.out.println("12. Update an airport's name");
-            System.out.println("13. Update an aircraft's capacity");
-            System.out.println("14. Remove a flight");
-            System.out.println("15. Remove an aircraft");
-            System.out.println("16. Remove an airport");
-            System.out.println("17. Remove a passenger from a flight");
-            System.out.println("18. Exit");
+            System.out.println("7. View all passenger aircraft");
+            System.out.println("8. View all cargo aircraft");
+            System.out.println("9. Add a new flight");
+            System.out.println("10. Add a new airport");
+            System.out.println("11. Add a new passenger aircraft");
+            System.out.println("12. Add a new cargo aircraft");
+            System.out.println("13. Update a flight's details");
+            System.out.println("14. Update an airport's name");
+            System.out.println("15. Update a passenger aircraft's capacity");
+            System.out.println("16. Update a cargo aircraft's capacity");
+            System.out.println("17. Remove a passenger aircraft");
+            System.out.println("18. Remove a cargo aircraft");
+            System.out.println("19. Remove an airport");
+            System.out.println("20. Remove a passenger from a flight");
+            System.out.println("21. Exit");
 
             int choice = scanner.nextInt();
             scanner.nextLine();
@@ -207,6 +210,10 @@ public class Main {
 
                 case 3:
                     List<Flight> flights = flightService.getAllFlights();
+                    if (flights.isEmpty()) {
+                        System.out.println("No flights available.");
+                        break;
+                    }
                     java.util.Map<Integer, String> airportIdToName = new java.util.HashMap<>();
                     for (Airport airport : airportService.getAllAirports()) {
                         airportIdToName.put(airport.getId(), airport.getName());
@@ -279,15 +286,24 @@ public class Main {
                     break;
 
                 case 7:
-                    System.out.println("Available aircraft:");
-                    List<Aircraft> aircraftList = aircraftService.getAllAircraft();
-                    for (Aircraft aircraft : aircraftList) {
-                        System.out.println("Aircraft ID: " + aircraft.getId() + ", Type: " +
+                    System.out.println("Available passenger aircraft:");
+                    List<PassengerAircraft> passengerAircraftList = Services.PassengerAircraftService.getInstance().getAllPassengerAircraft();
+                    for (PassengerAircraft aircraft : passengerAircraftList) {
+                        System.out.println("Passenger Aircraft ID: " + aircraft.getId() + ", Type: " +
                                 aircraft.getAircraftType() + ", Total Seats: " + aircraft.getTotalSeats());
                     }
                     break;
 
                 case 8:
+                    System.out.println("Available cargo aircraft:");
+                    List<Domain.CargoAircraft> cargoAircraftList = Services.CargoAircraftService.getInstance().getAllCargoAircraft();
+                    for (Domain.CargoAircraft aircraft : cargoAircraftList) {
+                        System.out.println("Cargo Aircraft ID: " + aircraft.getId() + ", Type: " +
+                                aircraft.getAircraftType() + ", Cargo Capacity: " + aircraft.getCargoCapacity() + " tone");
+                    }
+                    break;
+
+                case 9:
                     try {
                         System.out.println("Enter departure Airport ID (or type 'x' to go back):");
                         int departureAirportId = Integer.parseInt(getInputOrBack(scanner));
@@ -329,7 +345,7 @@ public class Main {
                     }
                     break;
 
-                case 9:
+                case 10:
                     try {
                         System.out.println("Enter the name of the airport (or type 'x' to go back):");
                         String airportName = getInputOrBack(scanner);
@@ -347,7 +363,7 @@ public class Main {
                     }
                     break;
 
-                case 10:
+                case 11:
                     try {
                         System.out.println("Enter aircraft type (Boeing/Airbus) (or type 'x' to go back):");
                         String aircraftTypeInput = getInputOrBack(scanner);
@@ -357,8 +373,26 @@ public class Main {
                         String totalSeatsInput = getInputOrBack(scanner);
                         int totalSeats = Integer.parseInt(totalSeatsInput);
 
-                        Aircraft newAircraft = new Aircraft(0, aircraftType, totalSeats); // ID will be set by database
-                        aircraftService.addAircraft(newAircraft);
+                        PassengerAircraft newAircraft = new PassengerAircraft(0, aircraftType, totalSeats);
+                        passengerAircraftService.addPassengerAircraft(newAircraft);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Error: Invalid aircraft type.");
+                    } catch (RuntimeException e) {
+                        if (!e.getMessage().equals("back")) throw e;
+                    }
+                    break;
+                case 12:
+                    try {
+                        System.out.println("Enter aircraft type (Boeing/Airbus) (or type 'x' to go back):");
+                        String aircraftTypeInput = getInputOrBack(scanner);
+                        AircraftType aircraftType = AircraftType.valueOf(aircraftTypeInput);
+
+                        System.out.println("Enter cargo capacity (tone) (or type 'x' to go back):");
+                        String cargoCapacityInput = getInputOrBack(scanner);
+                        double cargoCapacity = Double.parseDouble(cargoCapacityInput);
+
+                        Domain.CargoAircraft newCargoAircraft = new Domain.CargoAircraft(0, aircraftType, (int) cargoCapacity);
+                        Services.CargoAircraftService.getInstance().addCargoAircraft(newCargoAircraft);
                     } catch (IllegalArgumentException e) {
                         System.out.println("Error: Invalid aircraft type.");
                     } catch (RuntimeException e) {
@@ -366,7 +400,7 @@ public class Main {
                     }
                     break;
 
-                case 11:
+                case 13:
                     try {
                         System.out.println("Enter flight number to update (or type 'x' to go back):");
                         String flightNumberInput = getInputOrBack(scanner);
@@ -418,7 +452,7 @@ public class Main {
                     }
                     break;
 
-                case 12:
+                case 14:
                     try {
                         System.out.println("Enter airport ID to update (or type 'x' to go back):");
                         String idInput = getInputOrBack(scanner);
@@ -434,21 +468,21 @@ public class Main {
                     break;
 
 
-                case 13:
+                case 15:
                     try {
                         System.out.println("Enter aircraft ID to update (or type 'x' to go back):");
                         String idInput = getInputOrBack(scanner);
                         int aircraftId = Integer.parseInt(idInput);
 
-                        Aircraft aircraft = null;
-                        for (Aircraft a : aircraftService.getAllAircraft()) {
+                        PassengerAircraft aircraft = null;
+                        for (PassengerAircraft a : passengerAircraftService.getAllPassengerAircraft()) {
                             if (a.getId() == aircraftId) {
                                 aircraft = a;
                                 break;
                             }
                         }
                         if (aircraft == null) {
-                            System.out.println("Error: Aircraft not found.");
+                            System.out.println("Error: Passenger aircraft not found.");
                             break;
                         }
 
@@ -456,9 +490,9 @@ public class Main {
                         String seatsInput = getInputOrBack(scanner);
                         int newSeats = Integer.parseInt(seatsInput);
 
-                        Aircraft updatedAircraft = new Aircraft(aircraftId, aircraft.getAircraftType(), newSeats);
-                        aircraftService.updateAircraft(updatedAircraft);
-                        System.out.println("Aircraft updated successfully.");
+                        PassengerAircraft updatedAircraft = new PassengerAircraft(aircraftId, aircraft.getAircraftType(), newSeats);
+                        passengerAircraftService.updatePassengerAircraft(updatedAircraft);
+                        System.out.println("Passenger aircraft updated successfully.");
                     } catch (IllegalArgumentException e) {
                         System.out.println("Error: Invalid input.");
                     } catch (RuntimeException e) {
@@ -466,18 +500,39 @@ public class Main {
                     }
                     break;
 
-                case 14:
+                case 16:
                     try {
-                        System.out.println("Enter flight number to remove (or type 'x' to go back):");
-                        String flightNumberInput = getInputOrBack(scanner);
-                        int flightNumber = Integer.parseInt(flightNumberInput);
-                        flightService.removeFlight(flightNumber);
+                        System.out.println("Enter cargo aircraft ID to update (or type 'x' to go back):");
+                        String idInput = getInputOrBack(scanner);
+                        int aircraftId = Integer.parseInt(idInput);
+
+                        Domain.CargoAircraft aircraft = null;
+                        for (Domain.CargoAircraft a : Services.CargoAircraftService.getInstance().getAllCargoAircraft()) {
+                            if (a.getId() == aircraftId) {
+                                aircraft = a;
+                                break;
+                            }
+                        }
+                        if (aircraft == null) {
+                            System.out.println("Error: Cargo aircraft not found.");
+                            break;
+                        }
+
+                        System.out.println("Enter new cargo capacity (tone) (or type 'x' to go back):");
+                        String capacityInput = getInputOrBack(scanner);
+                        int newCapacity = Integer.parseInt(capacityInput);
+
+                        Domain.CargoAircraft updatedAircraft = new Domain.CargoAircraft(aircraftId, aircraft.getAircraftType(), newCapacity);
+                        Services.CargoAircraftService.getInstance().updateCargoAircraft(updatedAircraft);
+                        System.out.println("Cargo aircraft updated successfully.");
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("Error: Invalid input.");
                     } catch (RuntimeException e) {
                         if (!e.getMessage().equals("back")) throw e;
                     }
                     break;
 
-                case 15:
+                case 17:
                     try {
                         System.out.println("Enter aircraft ID to delete (or type 'x' to go back):");
                         String idInput = getInputOrBack(scanner);
@@ -492,15 +547,38 @@ public class Main {
                         if (hasFlights) {
                             System.out.println("Error: Aircraft cannot be deleted because it is assigned to one or more flights.");
                         } else {
-                            aircraftService.deleteAircraft(aircraftId);
-                            System.out.println("Aircraft deleted successfully.");
+                            Services.PassengerAircraftService.getInstance().deletePassengerAircraft(aircraftId);
+                            System.out.println("Passenger aircraft deleted successfully.");
                         }
                     } catch (RuntimeException e) {
                         if (!e.getMessage().equals("back")) throw e;
                     }
                     break;
 
-                case 16:
+                case 18:
+                    try {
+                        System.out.println("Enter cargo aircraft ID to delete (or type 'x' to go back):");
+                        String idInput = getInputOrBack(scanner);
+                        int aircraftId = Integer.parseInt(idInput);
+                        boolean hasFlights = false;
+                        for (Flight f : flightService.getAllFlights()) {
+                            if (f.getAircraftId() == aircraftId) {
+                                hasFlights = true;
+                                break;
+                            }
+                        }
+                        if (hasFlights) {
+                            System.out.println("Error: Cargo aircraft cannot be deleted because it is assigned to one or more flights.");
+                        } else {
+                            Services.CargoAircraftService.getInstance().deleteCargoAircraft(aircraftId);
+                            System.out.println("Cargo aircraft deleted successfully.");
+                        }
+                    } catch (RuntimeException e) {
+                        if (!e.getMessage().equals("back")) throw e;
+                    }
+                    break;
+
+                case 19:
                     try {
                         System.out.println("Enter airport ID to delete (or type 'x' to go back):");
                         String idInput = getInputOrBack(scanner);
@@ -533,7 +611,7 @@ public class Main {
                     }
                     break;
 
-                case 17:
+                case 20:
                     try {
                         System.out.println("Enter passenger name and surname (or type 'x' to go back):");
                         String passengerName = getInputOrBack(scanner);
@@ -559,7 +637,7 @@ public class Main {
                     }
                     break;
 
-                case 18:
+                case 21:
                     System.out.println("Exiting...");
                     scanner.close();
                     return;

@@ -18,12 +18,14 @@ public class FlightService {
     private final AircraftDAO aircraftDAO;
     private final SeatDAO seatDAO;
     private final AirportDAO airportDAO;
+    private final PassengerAircraftService passengerAircraftService;
 
     private FlightService() {
         this.flightDAO = FlightDAO.getInstance();
         this.aircraftDAO = AircraftDAO.getInstance();
         this.seatDAO = SeatDAO.getInstance();
         this.airportDAO = AirportDAO.getInstance();
+        this.passengerAircraftService = PassengerAircraftService.getInstance();
     }
 
     public static FlightService getInstance() {
@@ -64,13 +66,13 @@ public class FlightService {
         int generatedID = flightDAO.insertFlight(flight);
         System.out.println("Flight added to database: " + flight);
 
-        Aircraft aircraft = aircraftDAO.getAllAircraft().stream()
+        PassengerAircraft aircraft = passengerAircraftService.getAllPassengerAircraft().stream()
                 .filter(a -> a.getId() == flight.getAircraftId())
                 .findFirst()
                 .orElse(null);
 
         if (aircraft == null) {
-            System.out.println("Aircraft not found for ID: " + flight.getAircraftId());
+            System.out.println("Passenger aircraft not found for ID: " + flight.getAircraftId());
             return;
         }
 

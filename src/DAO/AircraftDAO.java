@@ -31,13 +31,12 @@ public class AircraftDAO {
     }
 
     public void insertAircraft(Aircraft aircraft) {
-        String sql = "INSERT INTO Aircraft (AircraftType, TotalSeats) VALUES (?, ?)";
+        String sql = "INSERT INTO Aircraft (AircraftType) VALUES (?)";
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, aircraft.getAircraftType().toString());
-            stmt.setInt(2, aircraft.getTotalSeats());
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -56,8 +55,7 @@ public class AircraftDAO {
             while (rs.next()) {
                 Aircraft aircraft = new Aircraft(
                         rs.getInt("ID"),
-                        AircraftType.valueOf(rs.getString("AircraftType")),
-                        rs.getInt("TotalSeats")
+                        AircraftType.valueOf(rs.getString("AircraftType"))
                 );
                 aircraftList.add(aircraft);
             }
@@ -70,9 +68,9 @@ public class AircraftDAO {
     }
 
     public void updateAircraft(Aircraft aircraft) {
-        String sql = "UPDATE Aircraft SET TotalSeats = ? WHERE ID = ?";
+        String sql = "UPDATE Aircraft SET AircraftType = ? WHERE ID = ?";
         try {
-            genericDAO.executeUpdate(sql, aircraft.getTotalSeats(), aircraft.getId());
+            genericDAO.executeUpdate(sql, aircraft.getAircraftType().toString(), aircraft.getId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
